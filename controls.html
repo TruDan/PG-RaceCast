@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PaperCast Client</title>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Roboto:regular,bold" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/res/css/controls.css" />
+</head>
+<body>
+<div class="valign-wrapper">
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <img src="/res/img/logo.png" class="logo center-align" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12" style="display:none;">
+            <ul id="tabs-controls" class="tabs">
+                <li class="tab col s3"><a class="active" href="#overlay"></a></li>
+                <li class="tab col s3"><a href="#controls"></a></li>
+                <li class="tab col s3"><a href="#game-over"></a></li>
+            </ul>
+        </div>
+        <div class="col s12 m6 offset-m3" id="overlay">
+            <ul class="collapsible popout" data-collapsible="accordion">
+                <li>
+                    <div class="collapsible-header yellow darken-1 z-depth-2 waves-effect waves-light yellow-text text-darken-4">New Game</div>
+                    <div class="collapsible-body yellow darken-3">
+                        <form action="#" id="new-game">
+                            <div class="input-field">
+                                <input type="text" id="name">
+                                <label for="name">Username</label>
+                            </div>
+                            <button class="waves-effect waves-light btn yellow yellow-text text-darken-4" type="submit"><i class="material-icons cast-icon left"></i>Cast</button>
+                        </form>
+                    </div>
+                </li>
+                <li>
+                    <div class="collapsible-header light-blue darken-4 z-depth-2 waves-effect waves-light light-blue-text text-accent-2">Join Game</div>
+                    <div class="collapsible-body light-blue darken-3">
+                        <form action="#" id="join-game">
+                            <div class="input-field">
+                                <input type="text" id="name">
+                                <label for="name">Username</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" id="gameid">
+                                <label for="gameid">Game Code</label>
+                            </div>
+                            <input class="waves-effect waves-light btn yellow yellow-text text-darken-4" type="submit" value="Play" />
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="col s12 m6 offset-m3" id="controls">
+            <div>
+                <a class="waves-effect waves-light btn deep-orange darken-3 btn-retro"><i class="material-icons left">exit_to_app</i>Leave</a>
+                <a class="waves-effect waves-light btn yellow darken-2 btn-retro right"><i class="material-icons left">pause</i>Pause</a>
+            </div>
+            <div class="card card-dpad light-blue darken-4">
+                <div class="card-content white-text">
+                    <div>
+                        <a class="btn-floating btn-large waves-effect light-blue" id="direction_up"><i class="material-icons light-blue-text text-darken-4">arrow_upward</i></a>
+                    </div>
+                    <div>
+                        <a class="btn-floating btn-large waves-effect light-blue" id="direction_left"><i class="material-icons light-blue-text text-darken-4">arrow_back</i></a>
+                        <a class="btn-floating btn-large waves-effect light-blue" id="direction_right"><i class="material-icons light-blue-text text-darken-4">arrow_forward</i></a>
+                    </div>
+                    <div>
+                        <a class="btn-floating btn-large waves-effect light-blue" id="direction_down"><i class="material-icons light-blue-text text-darken-4">arrow_downward</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div class="connection-indicator">
+                <div class="chip grey darken-3 connected light-green-text"><i class="material-icons">cloud</i> Connected to game servers</div>
+                <div class="chip grey darken-3 warn orange-text"><i class="material-icons">cloud_queue</i> Connected to game servers</div>
+                <div class="chip grey darken-3 disconnected red-text"><i class="material-icons">cloud_off</i> Connected to game servers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col s12 m6" id="game-over">
+        <div class="mdl-cell mdl-cell--4-col"></div>
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--middle mdl-typography--text-center mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Game Over!</h2>
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <button class="mdl-button mdl-button--raised mdl-button--colored mdl-js-button mdl-js-ripple-effect">Play Again?</button>
+                </div>
+            </div>
+            <div class="mdl-cell mdl-cell--4-col"></div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/deepstream.io-client-js/dist/deepstream.min.js"></script>
+    <script type="text/javascript" src="/build/controls.bundle.js"></script>
+<script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+</body>
+</html>
