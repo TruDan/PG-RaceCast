@@ -53,7 +53,7 @@ module.exports = class Game extends State {
         this._parts.paused.width = this.game.level.viewport.width;
         this._parts.paused.height = this.game.level.viewport.height;
 
-        this._parts.title = new PIXI.Text("PaperCast", {
+        this._parts.title = new PIXI.Text("RaceCast", {
             fontFamily: "Press Start 2P",
             fill: 0xCDDC39,
             fontSize: 75,

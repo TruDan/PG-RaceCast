@@ -24,6 +24,11 @@ module.exports = class Scoreboard extends PIXI.Graphics {
     addPlayer(player) {
         var sb = new ScoreboardItem(this, player);
         this.scores.push(sb);
+
+        for(var i =0; i < this.scores.length; i++){
+            this.scores[i]._drawGraphics(); //Force update
+        }
+
         this.addChild(sb);
         return sb;
     }
@@ -103,7 +108,7 @@ module.exports = class Scoreboard extends PIXI.Graphics {
         this.drawRect(0,0,this._width, 50);
         this.endFill();
 
-        this._parts.header = new PIXI.Text("Top Scores", {
+        this._parts.header = new PIXI.Text("Position", {
             fontFamily: "Press Start 2P",
             fill: 0xE0E0E0,
             fontSize: 18,
@@ -181,7 +186,7 @@ class ScoreboardItem extends PIXI.Graphics {
         this.endFill();
 
         this._parts.name.text = this.name;
-        this._parts.score.text = this.score;
+        this._parts.score.text = this.score + " / " + this.scoreboard.scores.length;
 
         this._parts.name.alpha = this.isAlive ? 1 : 0.5;
         this._parts.score.alpha = this.isAlive ? 1 : 0.5;

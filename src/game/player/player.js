@@ -38,7 +38,8 @@ const TINTS = [
     [0x607D8B,0xCFD8DC,0x263238]
 ];
 
-const SPEED = 0.25;
+const SPEEDINCREMENT= 0.1;
+const MAXSPEED = 0.3;
 
 module.exports = class Player extends Entity {
     constructor(game, level, id, dsUser=false) {
@@ -55,14 +56,19 @@ module.exports = class Player extends Entity {
         this.tint = this._getTint();
 
         this.isAlive = false;
-        this._isMoving = false;
-        this._direction = Direction.NONE;
-        this._nextDirection = Direction.NONE;
+        this._velocity = new PIXI.Point(0, 0);
+    }
+
+    _isMoving(){
+        if (this._velocity.x !== 0 || this._velocity.y !== 0) return true;
+        return false;
     }
 
     respawn(x, y) {
         this.x = x;
         this.y = y;
+        this._velocity.x = 0;
+        this._velocity.y = 0;
 
         this.alpha = 1;
 
@@ -70,23 +76,12 @@ module.exports = class Player extends Entity {
         console.log("Spawned Player ", this._id, this.name, this.x, this.y);
     }
 
-    move(direction) {
-        if(this._direction === direction) {
-            // Ignore, they're going that way anyway.
-            return;
-        }
-
-        // Target direction is different to before, let's queue it.
-        this._nextDirection = direction;
-        this._isMoving = true;
-    }
-
     kill() {
         if(!this.isAlive) return;
         this.isAlive = false;
 
-        this._isMoving = false;
-        this._direction = Direction.NONE;
+        this._velocity.x = 0;
+        this._velocity.y = 0;
 
         this.level.revokeAllClaims(this);
 
@@ -113,91 +108,42 @@ module.exports = class Player extends Entity {
         return (this.level.containsPoint(targetX, targetY));
     }
 
+    move(direction){
+        switch(direction){
+            case Direction.UP:
+                this._velocity.y = Math.max(this._velocity.y - SPEEDINCREMENT, -MAXSPEED);
+                return;
+            case Direction.DOWN:
+                this._velocity.y = Math.min(this._velocity.y + SPEEDINCREMENT, MAXSPEED);
+                return;
+            case Direction.LEFT:
+                this._velocity.x = Math.max(this._velocity.x - SPEEDINCREMENT, -MAXSPEED);
+                return;
+            case Direction.RIGHT:
+                this._velocity.x = Math.min(this._velocity.x + SPEEDINCREMENT, MAXSPEED);
+                return;
+        }
+    }
+
     _updateMove(dt) {
-        if(!this.isAlive || !this._isMoving) return;
+        if(!this.isAlive || !this._isMoving()) return;
 
-        // Only change their direction when fully in a grid cell
-        let cellSize = this.level.cellSize;
-        if((this.x - this.level.gridOffset.x) % cellSize === 0 && (this.y - this.level.gridOffset.y) % cellSize === 0) {
-            this._direction = this._nextDirection;
+        var cellCoordinates = this.getCurrentCell();
+        var cell = this.level.getCell(cellCoordinates.x, cellCoordinates.y);
+
+        this._velocity.x += this._velocity.x * cell.friction;
+        this._velocity.y += this._velocity.y * cell.friction;
+
+        var targetX = this.x + (this._velocity.x * dt);
+        var targetY = this.y + (this._velocity.y * dt);
+
+        if (this._canMove(targetX, targetY)){
+            this.x = targetX;
+            this.y = targetY;
+        }else{
+            this._velocity.x = -this._velocity.x * 1.1;
+            this._velocity.y = -this._velocity.y * 1.1;
         }
-
-        if(this._direction === Direction.NONE || this._direction === Direction.INVALID)
-            return;
-
-        let movePoint = this._getDirectionPoint(this._direction);
-        let targetX = this.x + (movePoint.x * SPEED * dt);
-        let targetY = this.y + (movePoint.y * SPEED * dt);
-
-        // normalise to cell pos
-        var cellPos = this.getCurrentCell();
-
-        if((this.y - this.level.gridOffset.y) % cellSize !== 0) {
-            if (this._direction === Direction.UP) {
-                targetY = Math.max(targetY, this.level.gridOffset.y + (cellPos.y) * this.level.cellSize);
-            }
-            else if (this._direction === Direction.DOWN) {
-                targetY = Math.min(targetY, this.level.gridOffset.y + (cellPos.y + 1) * this.level.cellSize);
-            }
-        }
-
-        if((this.x - this.level.gridOffset.x) % cellSize !== 0) {
-            if (this._direction === Direction.LEFT) {
-                targetX = Math.max(targetX, this.level.gridOffset.x + (cellPos.x) * this.level.cellSize);
-            }
-            else if (this._direction === Direction.DOWN) {
-                targetX = Math.min(targetX, this.level.gridOffset.x + (cellPos.x + 1) * this.level.cellSize);
-            }
-        }
-
-        if(this._canMove(targetX, targetY)) {
-            this.x = Math.floor(targetX);
-            this.y = Math.floor(targetY);
-
-            this.level.claimCell(this);
-        }
-        else {
-            // snap to nearest grid tile
-            var cp = this.level.getCellPointFromPoint(this.x, this.y);
-            this.x = cp.x;
-            this.y = cp.y;
-            this._direction = Direction.NONE;
-        }
-    }
-
-    _checkClaimConditions() {
-        if(!this.isAlive) return;
-
-        if(!this.level.hasClaim(this)) {
-            this._game.removePlayer(this._id);
-        }
-    }
-
-    _getDirectionPoint(direction) {
-        let x = 0, y = 0;
-        if(direction === Direction.UP) {
-            y = - 1;
-        }
-        else if(direction === Direction.DOWN) {
-            y = 1;
-        }
-        else if(direction === Direction.LEFT) {
-            x = - 1;
-        }
-        else if(direction === Direction.RIGHT) {
-            x = 1;
-        }
-        return new PIXI.Point(x,y);
-    }
-
-    _checkCollision() {
-        if(!this.isAlive) return;
-
-         var cellPos = this.getCurrentCell();
-         var cell = this.level.getCell(cellPos.x, cellPos.y);
-         if(cell.trailOwner !== null && cell.trailOwner !== this) {
-             cell.trailOwner.kill();
-         }
     }
 
     _getTint() {
@@ -249,8 +195,6 @@ module.exports = class Player extends Entity {
         }
 
         this._updateMove(dt);
-        this._checkCollision();
-        this._checkClaimConditions();
     }
 
     _updateGraphics() {

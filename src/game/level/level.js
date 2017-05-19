@@ -55,8 +55,19 @@ module.exports = class Level {
 
     init() {
         this._initCells();
+        this._loadMap();
         this._drawGrid();
     };
+
+    _loadMap(){
+        for(var x = 0; x < this.cols; x++){
+            for(var y = 0; y < this.rows; y++){
+                var index = (x * this.rows) + y;
+                var cell = this.cells[index];
+
+            }
+        }
+    }
 
 
     updateClaims(player) {
@@ -189,15 +200,6 @@ module.exports = class Level {
         this.viewport.trackEntity(player);
 
         player.respawn(pos.x, pos.y);
-
-        // Claim a 3x3
-        for(var i=-1;i<=1;i++) {
-            for(var j=-1;j<=1;j++) {
-                var cell = this.getCell(x + i, y + j);
-                cell.claim(player);
-            }
-        }
-
 
         player._initDebug();
     }

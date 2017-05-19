@@ -37,7 +37,7 @@ module.exports = class Main extends State {
 
     _initTitle() {
         // create a text object with a nice stroke
-        this.titleText = new PIXI.Text('PaperCast', {
+        this.titleText = new PIXI.Text('RaceCast', {
             fontWeight: 'bold',
             fontSize: 180,
             fontFamily: 'Arial',
